@@ -8,6 +8,7 @@ namespace TP3
     {
         static void Main(string[] args)
         {
+            //EXERCISE 1
             var collections = new MovieCollection().Movies;
 
             //Count all movies.
@@ -42,6 +43,7 @@ namespace TP3
 
             //Display the title of the movie with the lowest box office.
             var lowestBoxOffice = collections.OrderBy(x => x.BoxOffice)
+                                .Where(x => x.BoxOffice>0)
                                 .Take(1)
                                 .Select(g => g).ToList();
 
@@ -51,10 +53,52 @@ namespace TP3
             var reverseAlpha = collections.OrderByDescending(x => x.Title)
                                 .Take(11)
                                 .Select(g => g).ToList();
-            foreach (item in reverseAlpha)
+            foreach (var item in reverseAlpha)
             { 
                 Console.WriteLine($"{item.Title}");
             }
+
+            //Count all the movies made before 1980.
+            Console.WriteLine(collections.Count(x=>x.ReleaseDate.Year<1980));
+
+            //Display the average running time of movies having a vowel as the first letter
+            double averageRunningTime = 0;
+            int initialCount = 0;
+            foreach (var item in collections.Where(x => x.Title[0] =='A' || x.Title[0] == 'E' || x.Title[0] == 'I' || x.Title[0] == 'O' || x.Title[0] == 'U' || x.Title[0] == 'Y'))
+            {
+                averageRunningTime += item.RunningTime;
+                initialCount++;
+            }
+            Console.WriteLine($"average of {averageRunningTime / initialCount} hours");
+
+            //Group all films by the number of characters in the title screen and print the count of movies by letter in the film.
+            var charactersTitleScreen = collections.GroupBy(x => x.Title.Length)
+                                        .OrderBy(x => x.Key)
+                                        .Select(g => g).ToList();
+            foreach(var item in charactersTitleScreen)
+            {
+                Console.WriteLine($"{item.Key} char => {item.Count()} movie(s)");
+            }
+
+            // Calculate the mean of all Budget / Box Office of every movie ever
+            var meanOfAllBudget = collections.GroupBy(x => x.Budget)
+                            .Distinct();
+            var meanOfAllBoxOffice = collections.GroupBy(x => x.BoxOffice)
+                            .Distinct();
+            Console.WriteLine($"Mean Budget: {meanOfAllBudget.Average(x => x.Key)}\nMean Box Office: {meanOfAllBoxOffice.Average(x => x.Key)}");
+
+            //Print all movies with the letter H or W in the title, but not the letter I or T
+            var MoviesWithHOrW = collections.Where(x => (x.Title.Contains('h') || x.Title.Contains('H') || x.Title.Contains('W') || x.Title.Contains('w')) && !x.Title.Contains('t') && !x.Title.Contains('T') && !x.Title.Contains('i') && !x.Title.Contains('I'))
+                                 .Select(g => g).ToList();
+            Console.WriteLine("Movies with h or w but not i or t:");
+            foreach (var item in MoviesWithHOrW)
+            { 
+                Console.WriteLine(item.Title); 
+            }
+
+            //EXERCISE 2
+
+
         }
     }
 }
