@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Collections;
+using System.Threading;
+using System.Diagnostics;
 
 namespace TP3
 {
@@ -98,7 +100,58 @@ namespace TP3
 
             //EXERCISE 2
 
+            createThreads();
 
         }
+
+        private static Mutex mut = new Mutex();
+        static void createThreads()
+        {
+            
+            Thread a = new Thread(startwork);
+            Thread b = new Thread(startwork);
+            Thread c = new Thread(startwork);
+            a.Name = "a";
+            b.Name = "b";
+            c.Name = "c";
+            a.Start();
+            b.Start();
+            c.Start();
+        }
+
+        private static void startwork(object obj)
+        {
+
+            var th = Thread.CurrentThread;
+            if (th.Name == "a")
+            {
+                job('_', 10000, 50);
+            }
+            if (th.Name == "b")
+            {
+                job('*', 11000, 40);
+            }
+            if (th.Name == "c")
+            {
+                job('°', 9000, 20);
+            }
+            
+        }
+
+        public static void job(char character, int time, int beat)
+        {
+            var sw = Stopwatch.StartNew();
+           
+            do
+            {
+                mut.WaitOne();
+                Console.Write(character);
+                mut.ReleaseMutex();
+                Thread.Sleep(beat);
+            } while (sw.ElapsedMilliseconds <= time);
+            sw.Stop();
+        }
+
+
     }
 }
